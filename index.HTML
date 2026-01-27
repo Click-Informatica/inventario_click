@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Informática & CCTV - Andresito</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root { --primary: #0d6efd; --admin: #dc3545; }
+        body { background-color: #f4f4f9; }
+        .navbar { background: #1a1a1a; border-bottom: 3px solid var(--primary); }
+        .product-card { border: none; border-radius: 12px; transition: 0.3s; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .img-container { height: 160px; overflow: hidden; border-radius: 12px 12px 0 0; background: #eee; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; }
+        #admin-panel { display: none; background: #fff; border-left: 5px solid var(--admin); }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark mb-4 p-3 no-print">
+    <div class="container d-flex justify-content-between">
+        <span class="navbar-brand fw-bold">🛡️ CLICK INFORMÁTICA & CCTV</span>
+        <button onclick="loginAdmin()" class="btn btn-outline-light btn-sm">🔒 Admin</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div id="admin-panel" class="card card-body mb-5 shadow-sm no-print">
+        <h4 class="text-danger mb-3">Panel de Gestión (Nube Activa ☁️)</h4>
+        <div class="row g-2">
+            <div class="col-md-3"><input type="text" id="add-nombre" class="form-control" placeholder="Equipo"></div>
+            <div class="col-md-2"><input type="number" id="add-precio" class="form-control" placeholder="Precio"></div>
+            <div class="col-md-4"><input type="text" id="add-img" class="form-control" placeholder="URL Imagen"></div>
+            <div class="col-md-3"><button id="btn-publicar" class="btn btn-danger w-100">Publicar en la Nube</button></div>
+        </div>
+        <button onclick="cerrarAdmin()" class="btn btn-link btn-sm mt-2 text-secondary">Cerrar Sesión</button>
+    </div>
+
+    <div class="row no-print" id="catalogo-tienda">
+        <div class="text-center p-5"><h5>Conectando con la base de datos de Andresito...</h5></div>
+    </div>
+
+    <div id="area-cotizacion" class="card shadow mt-5 p-4 bg-white border-0" style="border-radius: 15px;">
+        <div class="row mb-4 border-bottom pb-3">
+            <div class="col-6">
+                <img src="https://via.placeholder.com/150x80?text=CLICK+INFO" id="logo-img" style="max-width: 160px;">
+                <input type="text" id="url-logo" class="form-control form-control-sm no-print mt-2" placeholder="URL del Logo" onchange="actualizarLogo()">
+            </div>
+            <div class="col-6 text-end">
+                <h2 class="text-primary fw-bold">PRESUPUESTO</h2>
+                <p class="mb-0"><strong>Andresito, Misiones</strong></p>
+                <p class="mb-0">Cel: 3757601349</p>
+                <p class="small text-muted" id="fecha-actual"></p>
+            </div>
+        </div>
+        <table class="table">
+            <thead class="table-dark">
+                <tr><th>Descripción</th><th class="text-center">Cant.</th><th class="text-end">Unit.</th><th class="text-end">Subtotal</th><th class="text-center no-print"></th></tr>
+            </thead>
+            <tbody id="tabla-cotizacion"></tbody>
+        </table>
+        <div class="text-end mt-3"><h3>Total: <span id="total-final" class="text-success">$0</span></h3></div>
+        <div class="mt-4 no-print row g-2">
+            <div class="col-md-6"><button onclick="exportarPDF()" class="btn btn-dark btn-lg w-100">📥 PDF</button></div>
+            <div class="col-md-6"><button onclick="enviarWhatsApp()" class="btn btn-success btn-lg w-100">💬 WhatsApp</button></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Datos extraídos de tu captura de pantalla
+    const firebaseConfig = {
+        apiKey: "AIzaSyCWHZM6KXHbFNCPvOLYM-6C-kZ2BzK7GlM",
+        authDomain: "click-andresito.firebaseapp.com",
+        projectId: "click-andresito",
+        storageBucket: "click-andresito.firebasestorage.app",
+        messagingSenderId: "894542621880",
+        appId: "1:894542621880:web:e34cb0b70b8aaaec9b184d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const productosRef = collection(db, "productos");
+
+    onSnapshot(productosRef, (snapshot) => {
+        const productos = [];
+        snapshot.forEach((doc) => productos.push({ id: doc.id, ...doc.data() }));
+        window.productosGlobales = productos;
+        renderTienda(productos);
+    });
+
+    document.getElementById('btn-publicar').onclick = async () => {
+        const nombre = document.getElementById('add-nombre').value;
+        const precio = parseFloat(document.getElementById('add-precio').value);
+        const img = document.getElementById('add-img').value;
+
+        if (nombre && precio) {
+            await addDoc(productosRef, { nombre, precio, img: img || '' });
+            document.getElementById('add-nombre').value = '';
+            document.getElementById('add-precio').value = '';
+            document.getElementById('add-img').value = '';
+        }
+    };
+
+    window.borrarProductoNube = async (id) => {
+        if(confirm("¿Eliminar producto de la nube?")) {
+            await deleteDoc(doc(db, "productos", id));
+        }
+    };
+</script>
+
+<script>
+    let carrito = [];
+    const CLAVE_ADMIN = "1234";
+
+    function renderTienda(productos) {
+        const contenedor = document.getElementById('catalogo-tienda');
+        const isAdmin = document.getElementById('admin-panel').style.display === 'block';
+        
+        if (productos.length === 0) {
+            contenedor.innerHTML = '<div class="text-center p-5 w-100"><h5>No hay productos. Entra como Admin para cargar el primero.</h5></div>';
+            return;
+        }
+
+        contenedor.innerHTML = productos.map((p, i) => `
+            <div class="col-6 col-md-4 col-lg-3 mb-4">
+                <div class="card product-card">
+                    <div class="img-container"><img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/200?text=CCTV'"></div>
+                    <div class="card-body p-2 text-center">
+                        <h6 class="mb-1">${p.nombre}</h6>
+                        <p class="fw-bold text-primary mb-2">$${p.precio.toLocaleString()}</p>
+                        <button onclick="alCarrito(${i})" class="btn btn-primary btn-sm w-100">Añadir</button>
+                        ${isAdmin ? `<button onclick="borrarProductoNube('${p.id}')" class="btn btn-link btn-sm text-danger p-0 mt-1">Eliminar</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function alCarrito(index) {
+        const p = window.productosGlobales[index];
+        const exist = carrito.find(item => item.nombre === p.nombre);
+        if(exist) exist.cant++; else carrito.push({...p, cant: 1});
+        actualizarCotizacion();
+    }
+
+    function actualizarCotizacion() {
+        const tabla = document.getElementById('tabla-cotizacion');
+        let total = 0;
+        tabla.innerHTML = carrito.map((item, i) => {
+            const sub = item.precio * item.cant;
+            total += sub;
+            return `<tr><td>${item.nombre}</td><td class="text-center">${item.cant}</td><td class="text-end">$${item.precio.toLocaleString()}</td><td class="text-end">$${sub.toLocaleString()}</td><td class="text-center no-print"><button class="btn btn-sm text-danger" onclick="quitarUno(${i})">x</button></td></tr>`;
+        }).join('');
+        document.getElementById('total-final').innerText = `$${total.toLocaleString()}`;
+    }
+
+    function enviarWhatsApp() {
+        let mensaje = `*CLICK INFORMÁTICA - PRESUPUESTO*%0A------------------------------%0A`;
+        carrito.forEach(item => mensaje += `• ${item.nombre} (x${item.cant}): $${(item.precio * item.cant).toLocaleString()}%0A`);
+        mensaje += `------------------------------%0A*TOTAL: ${document.getElementById('total-final').innerText}*`;
+        window.open(`https://wa.me/5493757601349?text=${mensaje}`, '_blank');
+    }
+
+    function exportarPDF() {
+        const element = document.getElementById('area-cotizacion');
+        html2pdf().from(element).set({ margin: 0.5, filename: 'Presupuesto_Click.pdf', html2canvas: { scale: 3 } }).save();
+    }
+
+    function loginAdmin() { if(prompt("Clave:") === CLAVE_ADMIN) { document.getElementById('admin-panel').style.display = 'block'; renderTienda(window.productosGlobales); } }
+    function cerrarAdmin() { document.getElementById('admin-panel').style.display = 'none'; renderTienda(window.productosGlobales); }
+    function quitarUno(i) { carrito.splice(i, 1); actualizarCotizacion(); }
+    function actualizarLogo() { const url = document.getElementById('url-logo').value; document.getElementById('logo-img').src = url; localStorage.setItem('logo_click', url); }
+
+    document.getElementById('fecha-actual').innerText = "Fecha: " + new Date().toLocaleDateString();
+    const l = localStorage.getItem('logo_click'); if(l){ document.getElementById('logo-img').src = l; document.getElementById('url-logo').value = l; }
+</script>
+</body>
+</html>
