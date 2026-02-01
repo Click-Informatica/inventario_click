@@ -9,39 +9,37 @@
     <style>
         :root { --azul-click: #0a3d4d; --verde-ciss: #14828a; --light: #f8f9fa; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--light); }
-        .navbar { background: white; border-bottom: 3px solid var(--azul-click); }
+        .navbar { background: white; border-bottom: 3px solid var(--azul-click); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .hero { background: linear-gradient(135deg, var(--azul-click) 0%, var(--verde-ciss) 100%); color: white; padding: 40px 0; text-align: center; }
         
-        /* Botones de Servicios Grandes */
         .service-btn { 
             background: white; border: none; border-radius: 15px; padding: 25px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; width: 100%; text-align: left;
-            margin-bottom: 15px;
         }
-        .service-btn:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .service-btn:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-left: 5px solid var(--verde-ciss); }
         .service-icon { font-size: 2rem; color: var(--verde-ciss); margin-bottom: 10px; }
         
-        /* Sub-botones de Categoría */
         .sub-cat-btn {
-            background: #e9ecef; border: none; border-radius: 10px; padding: 10px 20px;
-            font-weight: 600; color: var(--azul-click); transition: 0.2s;
+            background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 8px 15px;
+            font-size: 0.9rem; font-weight: 600; color: var(--azul-click); transition: 0.2s;
         }
-        .sub-cat-btn:hover { background: var(--verde-ciss); color: white; }
+        .sub-cat-btn:hover, .sub-cat-btn.active { background: var(--verde-ciss); color: white; border-color: var(--verde-ciss); }
 
-        /* Estilo de los productos vacíos */
-        .product-card { border: none; border-radius: 15px; background: white; height: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .img-placeholder { height: 180px; background: #eee; display: flex; align-items: center; justify-content: center; border-radius: 15px 15px 0 0; color: #ccc; }
+        .product-card { border: none; border-radius: 15px; background: white; height: 100%; transition: 0.3s; overflow: hidden; }
+        .img-container { height: 160px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; position: relative; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .img-placeholder { color: #dee2e6; font-size: 3rem; }
         
-        #admin-panel { display: none; background: #fff; border: 2px dashed var(--verde-ciss); border-radius: 20px; padding: 25px; margin-bottom: 30px; }
-        .whatsapp-btn { position: fixed; bottom: 25px; right: 25px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 1000; text-decoration: none; }
+        #admin-panel { display: none; background: #fff; border: 2px solid var(--azul-click); border-radius: 20px; padding: 25px; margin-bottom: 30px; }
+        .whatsapp-btn { position: fixed; bottom: 25px; right: 25px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 1000; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
 <nav class="navbar sticky-top px-3">
-    <div class="container d-flex justify-content-between">
+    <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand fw-bold" href="#" style="color: var(--azul-click)">🛡️ CLICK | CISS</a>
-        <button onclick="toggleAdmin()" class="btn btn-sm btn-light rounded-circle"><i class="bi bi-gear"></i></button>
+        <button onclick="toggleAdmin()" class="btn btn-outline-secondary btn-sm rounded-pill">Admin</button>
     </div>
 </nav>
 
@@ -54,71 +52,78 @@
 
 <div class="container my-5">
     
-    <h4 class="fw-bold mb-4">Áreas de Servicio</h4>
-    <div class="row g-3">
+    <div class="row g-3 mb-4">
         <div class="col-md-4">
             <button class="service-btn" data-bs-toggle="collapse" data-bs-target="#sub-seguridad">
                 <div class="service-icon"><i class="bi bi-shield-lock"></i></div>
-                <h5 class="fw-bold m-0">CCTV y Seguridad</h5>
-                <small class="text-muted">Cámaras, Cercos, Alarmas</small>
+                <h5 class="fw-bold m-0">Seguridad Electrónica</h5>
+                <small class="text-muted">CCTV, Cercos y Alarmas</small>
             </button>
         </div>
         <div class="col-md-4">
-            <button class="service-btn" data-bs-toggle="collapse" data-bs-target="#sub-informatica">
+            <button class="service-btn" onclick="filtrar('Informática')">
                 <div class="service-icon"><i class="bi bi-pc-display"></i></div>
                 <h5 class="fw-bold m-0">Informática</h5>
-                <small class="text-muted">Soporte, Ventas y Servidores</small>
+                <small class="text-muted">Soporte y Ventas</small>
             </button>
         </div>
         <div class="col-md-4">
-            <button class="service-btn" data-bs-toggle="collapse" data-bs-target="#sub-redes">
+            <button class="service-btn" onclick="filtrar('Redes')">
                 <div class="service-icon"><i class="bi bi-wifi"></i></div>
                 <h5 class="fw-bold m-0">Redes y Enlaces</h5>
-                <small class="text-muted">WiFi Alta Escala y Puntos a Punto</small>
+                <small class="text-muted">Conectividad Avanzada</small>
             </button>
         </div>
     </div>
 
-    <div class="collapse mt-4" id="sub-seguridad">
-        <div class="card card-body border-0 shadow-sm rounded-4">
-            <h6 class="fw-bold mb-3 text-uppercase" style="color: var(--verde-ciss)">Seleccione Sub-Categoría:</h6>
+    <div class="collapse mb-4" id="sub-seguridad">
+        <div class="p-3 bg-white rounded-4 shadow-sm">
+            <h6 class="fw-bold mb-3 text-muted small">CATEGORÍAS DE SEGURIDAD:</h6>
             <div class="d-flex flex-wrap gap-2">
-                <button class="sub-cat-btn" onclick="filtrar('Cámaras Analógicas')">Cámaras Analógicas</button>
+                <button class="sub-cat-btn" onclick="filtrar('Cámaras Analógicas')">Analógicas</button>
                 <button class="sub-cat-btn" onclick="filtrar('Cámaras IP')">Cámaras IP</button>
                 <button class="sub-cat-btn" onclick="filtrar('Cámaras WiFi')">Cámaras WiFi</button>
-                <button class="sub-cat-btn" onclick="filtrar('Grabadores')">Grabadores</button>
-                <button class="sub-cat-btn" onclick="filtrar('Almacenamiento')">Almacenamiento</button>
-                <button class="sub-cat-btn" onclick="filtrar('Accesorios')">Accesorios CCTV</button>
+                <button class="sub-cat-btn" onclick="filtrar('Grabadores')">Grabadores (DVR/NVR)</button>
+                <button class="sub-cat-btn" onclick="filtrar('Kits')">Kits Completos</button>
+                <button class="sub-cat-btn" onclick="filtrar('Almacenamiento')">Discos y Memorias</button>
+                <button class="sub-cat-btn" onclick="filtrar('Accesorios')">Accesorios/Cables</button>
             </div>
         </div>
     </div>
 
-    <div id="admin-panel" class="mt-4">
-        <h5 class="fw-bold mb-3">Panel Admin - Cargar Ítem</h5>
+    <div id="admin-panel">
+        <h5 class="fw-bold mb-3" id="admin-titulo">Cargar Nuevo Producto</h5>
+        <input type="hidden" id="edit-id">
         <div class="row g-2">
-            <div class="col-md-4"><input type="text" id="p-nombre" class="form-control" placeholder="Descripción del artículo"></div>
-            <div class="col-md-2"><input type="number" id="p-precio" class="form-control" placeholder="Precio (opcional)"></div>
+            <div class="col-md-4"><input type="text" id="p-nombre" class="form-control" placeholder="Descripción"></div>
+            <div class="col-md-2"><input type="number" step="0.01" id="p-precio" class="form-control" placeholder="Precio USD"></div>
             <div class="col-md-3">
                 <select id="p-cat" class="form-select">
                     <option value="Cámaras Analógicas">Cámaras Analógicas</option>
                     <option value="Cámaras IP">Cámaras IP</option>
                     <option value="Cámaras WiFi">Cámaras WiFi</option>
                     <option value="Grabadores">Grabadores</option>
+                    <option value="Kits">Kits</option>
                     <option value="Almacenamiento">Almacenamiento</option>
                     <option value="Accesorios">Accesorios</option>
                     <option value="Informática">Informática</option>
+                    <option value="Redes">Redes</option>
                 </select>
             </div>
-            <div class="col-md-3"><input type="text" id="p-foto" class="form-control" placeholder="URL de la Foto (opcional)"></div>
-            <div class="col-12 mt-2"><button onclick="subirProducto()" class="btn btn-success w-100 fw-bold">PUBLICAR ARTÍCULO</button></div>
+            <div class="col-md-3"><input type="text" id="p-foto" class="form-control" placeholder="URL Foto"></div>
+            <div class="col-12 mt-3">
+                <button id="btn-subir" onclick="guardarProducto()" class="btn btn-success w-100 fw-bold">PUBLICAR PRODUCTO</button>
+                <button id="btn-cancelar" onclick="limpiarForm()" class="btn btn-light w-100 mt-2" style="display:none">Cancelar Edición</button>
+            </div>
         </div>
     </div>
 
-    <hr class="my-5">
-
-    <h4 id="titulo-catalogo" class="fw-bold mb-4">Catálogo General</h4>
-    <div id="lista-productos" class="row g-4">
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h4 id="titulo-catalogo" class="fw-bold m-0">Catálogo Completo</h4>
+        <button class="btn btn-sm btn-outline-secondary" onclick="location.reload()">Ver Todo</button>
+    </div>
+    
+    <div id="lista-productos" class="row g-3"></div>
 </div>
 
 <a href="https://wa.me/5493757601349" class="whatsapp-btn shadow" target="_blank"><i class="bi bi-whatsapp"></i></a>
@@ -126,7 +131,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDqP1Q3cm1KxxGgqAHUfKJXFq9HWWS3Q5k",
@@ -141,51 +146,96 @@
     const db = getFirestore(app);
     const colRef = collection(db, "inventario");
 
-    // ARTICULOS MAESTROS (CARGA INICIAL SIN PRECIO NI FOTO)
-    const articulosBase = [
-        { nombre: "Cámara Hilook Domo Turbo HD THC-T110-P (720p)", cat: "Cámaras Analógicas" },
-        { nombre: "Cámara Hikvision Domo DS-2CE56COT-IRP", cat: "Cámaras Analógicas" },
-        { nombre: "Cámara Hilook Bullet Turbo HD THC-B110-P", cat: "Cámaras Analógicas" },
-        { nombre: "Cámara IP Ezviz H3C Color (Full HD Wifi)", cat: "Cámaras WiFi" },
-        { nombre: "DVR Hilook DVR-116G-M1 (16 CH)", cat: "Grabadores" },
-        { nombre: "NVR Hikvision DS-7616NI-Q2 (16 CH, 4K)", cat: "Grabadores" },
-        { nombre: "Disco Rígido Seagate 1TB Skyhawk Surveillance", cat: "Almacenamiento" },
-        { nombre: "Balun Pasivo Hikvision DS-1H18S-E (Par)", cat: "Accesorios" }
+    // DATA INTEGRAL NISSEI
+    const catalogoIncial = [
+        { nombre: "Cámara Hilook Domo Turbo HD THC-T110-P", cat: "Cámaras Analógicas", precio: 8.00 },
+        { nombre: "Cámara Hikvision Domo DS-2CE56COT-IRP", cat: "Cámaras Analógicas", precio: 9.90 },
+        { nombre: "Cámara Hilook Bullet Turbo HD THC-B110-P", cat: "Cámaras Analógicas", precio: 10.00 },
+        { nombre: "Cámara CCTV Hilook Bullet THC-B120-PC (2MP)", cat: "Cámaras Analógicas", precio: 11.00 },
+        { nombre: "Cámara Hikvision Bullet ColorVu DS-2CE10DFOT", cat: "Cámaras Analógicas", precio: 22.50 },
+        { nombre: "Cámara IP Ezviz H3C Color (Full HD Wifi)", cat: "Cámaras WiFi", precio: 39.00 },
+        { nombre: "Cámara IP Ezviz H8C (360° Blanco)", cat: "Cámaras WiFi", precio: 43.00 },
+        { nombre: "Cámara IP Hikvision AcuSense Dome 6MP", cat: "Cámaras IP", precio: 139.00 },
+        { nombre: "Cámara Hikvision Solar 4G LTE", cat: "Cámaras IP", precio: 240.00 },
+        { nombre: "DVR Hilook 16 CH 1080p", cat: "Grabadores", precio: 55.00 },
+        { nombre: "NVR Hikvision 16 CH 4K", cat: "Grabadores", precio: 91.00 },
+        { nombre: "Kit Hikvision 4 Canales 720p Completo", cat: "Kits", precio: 82.00 },
+        { nombre: "Kit WiFi Hikvision NK42W0H", cat: "Kits", precio: 148.00 },
+        { nombre: "Disco Rígido 1TB Skyhawk Video", cat: "Almacenamiento", precio: 76.51 },
+        { nombre: "Disco Rígido 4TB Skyhawk Video", cat: "Almacenamiento", precio: 144.35 },
+        { nombre: "Fuente Switching 12V 5A", cat: "Accesorios", precio: 21.40 },
+        { nombre: "Cable UTP Cat5e Exterior (Caja 305m)", cat: "Accesorios", precio: 225.00 }
     ];
 
-    window.subirProducto = async () => {
+    window.guardarProducto = async () => {
+        const id = document.getElementById('edit-id').value;
         const nombre = document.getElementById('p-nombre').value;
-        const precio = document.getElementById('p-precio').value || 0;
+        const precio = Number(document.getElementById('p-precio').value);
         const cat = document.getElementById('p-cat').value;
-        const foto = document.getElementById('p-foto').value || "";
-        if(nombre) {
+        const foto = document.getElementById('p-foto').value;
+        
+        if(!nombre) return alert("Escribe al menos el nombre");
+
+        if(id) {
+            await updateDoc(doc(db, "inventario", id), { nombre, precio, cat, foto });
+            alert("Actualizado");
+        } else {
             await addDoc(colRef, { nombre, precio, cat, foto, fecha: new Date() });
-            alert("Artículo cargado");
+            alert("Guardado");
         }
+        limpiarForm();
+    };
+
+    window.prepararEdicion = (id, nombre, precio, cat, foto) => {
+        document.getElementById('edit-id').value = id;
+        document.getElementById('p-nombre').value = nombre;
+        document.getElementById('p-precio').value = precio;
+        document.getElementById('p-cat').value = cat;
+        document.getElementById('p-foto').value = foto;
+        document.getElementById('admin-titulo').innerText = "Editando Producto";
+        document.getElementById('btn-subir').innerText = "GUARDAR CAMBIOS";
+        document.getElementById('btn-cancelar').style.display = "block";
+        window.scrollTo(0, 0);
+    };
+
+    window.limpiarForm = () => {
+        document.getElementById('edit-id').value = "";
+        document.getElementById('p-nombre').value = "";
+        document.getElementById('p-precio').value = "";
+        document.getElementById('p-foto').value = "";
+        document.getElementById('admin-titulo').innerText = "Cargar Nuevo Producto";
+        document.getElementById('btn-subir').innerText = "PUBLICAR PRODUCTO";
+        document.getElementById('btn-cancelar').style.display = "none";
     };
 
     onSnapshot(query(colRef, orderBy("fecha", "desc")), (snapshot) => {
         const contenedor = document.getElementById('lista-productos');
         contenedor.innerHTML = '';
         
-        // Unimos los base + los de firebase para que no falte nada
-        let todos = [...articulosBase];
-        snapshot.forEach(d => todos.unshift({ ...d.data(), id: d.id }));
+        let datosFinales = [];
+        snapshot.forEach(d => datosFinales.push({ ...d.data(), id: d.id }));
+        
+        // Si no hay nada en Firebase, mostramos los iniciales para que no esté vacío
+        if(datosFinales.length === 0) datosFinales = catalogoIncial;
 
-        todos.forEach((p) => {
-            const displayPrecio = p.precio > 0 ? `$${p.precio}` : "Consultar";
-            const imgHtml = p.foto ? `<img src="${p.foto}">` : `<div class="img-placeholder"><i class="bi bi-camera" style="font-size:3rem"></i></div>`;
-            
+        datosFinales.forEach((p) => {
+            const displayPrecio = p.precio > 0 ? `USD ${p.precio}` : "Consultar";
+            const imgHtml = p.foto ? `<img src="${p.foto}">` : `<div class="img-placeholder"><i class="bi bi-camera"></i></div>`;
+            const isAdmin = document.getElementById('admin-panel').style.display === 'block' ? 'block' : 'none';
+
             contenedor.innerHTML += `
-                <div class="col-md-3 product-item" data-cat="${p.cat}">
-                    <div class="card product-card">
-                        <div class="img-container" style="height:180px; overflow:hidden;">${imgHtml}</div>
-                        <div class="card-body">
-                            <small class="text-muted">${p.cat}</small>
-                            <h6 class="fw-bold mb-2" style="font-size: 0.9rem">${p.nombre}</h6>
-                            <p class="text-primary fw-bold mb-3">${displayPrecio}</p>
-                            <a href="https://wa.me/5493757601349?text=Hola, precio de: ${p.nombre}" target="_blank" class="btn btn-outline-success btn-sm w-100">Consultar</a>
-                            ${p.id ? `<button onclick="eliminar('${p.id}')" class="btn btn-link text-danger btn-sm w-100 admin-only" style="display:none">Borrar</button>` : ''}
+                <div class="col-6 col-md-3 product-item" data-cat="${p.cat}">
+                    <div class="card product-card shadow-sm h-100">
+                        <div class="img-container">${imgHtml}</div>
+                        <div class="card-body p-2 d-flex flex-column">
+                            <small class="text-uppercase fw-bold text-muted" style="font-size:0.65rem">${p.cat}</small>
+                            <h6 class="fw-bold mb-1" style="font-size: 0.85rem; flex-grow: 1;">${p.nombre}</h6>
+                            <p class="text-success fw-bold mb-2" style="font-size: 0.9rem">${displayPrecio}</p>
+                            <a href="https://wa.me/5493757601349?text=Me interesa: ${p.nombre}" target="_blank" class="btn btn-dark btn-sm rounded-pill mb-1">Consultar</a>
+                            <div class="admin-only" style="display:${isAdmin}">
+                                <button onclick="prepararEdicion('${p.id}','${p.nombre}',${p.precio},'${p.cat}','${p.foto}')" class="btn btn-info btn-sm w-100 mb-1 text-white">Editar</button>
+                                <button onclick="eliminar('${p.id}')" class="btn btn-danger btn-sm w-100">Borrar</button>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -195,20 +245,18 @@
     window.filtrar = (cat) => {
         document.getElementById('titulo-catalogo').innerText = "Viendo: " + cat;
         document.querySelectorAll('.product-item').forEach(item => {
-            item.style.display = item.getAttribute('data-cat') === cat ? 'block' : 'none';
+            item.style.display = item.getAttribute('data-cat').includes(cat) ? 'block' : 'none';
         });
+        window.scrollTo(0, 500);
     };
 
-    window.eliminar = async (id) => { if(confirm("¿Borrar?")) await deleteDoc(doc(db, "inventario", id)); };
-</script>
-
-<script>
-    function toggleAdmin() {
+    window.eliminar = async (id) => { if(confirm("¿Seguro?")) await deleteDoc(doc(db, "inventario", id)); };
+    window.toggleAdmin = () => {
         if(prompt("Clave:") === "1234") {
             document.getElementById('admin-panel').style.display = 'block';
             document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
         }
-    }
+    };
 </script>
 </body>
 </html>
