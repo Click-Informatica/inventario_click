@@ -3,183 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Informática & CCTV - Andresito</title>
+    <title>Click Informática & CISS CCTV | Catálogo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        :root { --primary: #0d6efd; --admin: #dc3545; }
-        body { background-color: #f4f4f9; }
-        .navbar { background: #1a1a1a; border-bottom: 3px solid var(--primary); }
-        .product-card { border: none; border-radius: 12px; transition: 0.3s; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .img-container { height: 160px; overflow: hidden; border-radius: 12px 12px 0 0; background: #eee; }
-        .product-img { width: 100%; height: 100%; object-fit: cover; }
-        #admin-panel { display: none; background: #fff; border-left: 5px solid var(--admin); }
-        @media print { .no-print { display: none !important; } }
+        :root { --azul-click: #0a3d4d; --verde-ciss: #14828a; --light: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--light); }
+        .navbar { background: white; border-bottom: 3px solid var(--azul-click); }
+        .hero { background: linear-gradient(135deg, var(--azul-click) 0%, var(--verde-ciss) 100%); color: white; padding: 40px 0; text-align: center; }
+        .service-btn { background: white; border: none; border-radius: 15px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s; width: 100%; }
+        .service-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .product-card { border: none; border-radius: 12px; background: white; height: 100%; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .img-container { height: 160px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 12px 12px 0 0; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        #admin-panel { display: none; background: #fff; border: 2px dashed var(--verde-ciss); border-radius: 20px; padding: 25px; margin-bottom: 30px; }
+        .whatsapp-btn { position: fixed; bottom: 25px; right: 25px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-decoration: none; }
+        .badge-cat { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-dark mb-4 p-3 no-print">
+<nav class="navbar sticky-top px-3">
     <div class="container d-flex justify-content-between">
-        <span class="navbar-brand fw-bold">🛡️ CLICK INFORMÁTICA & CCTV</span>
-        <button onclick="loginAdmin()" class="btn btn-outline-light btn-sm">🔒 Admin</button>
+        <a class="navbar-brand fw-bold" href="#" style="color: var(--azul-click)">🛡️ CLICK | CISS</a>
+        <button onclick="toggleAdmin()" class="btn btn-sm btn-light rounded-circle"><i class="bi bi-gear"></i></button>
     </div>
 </nav>
 
-<div class="container">
-    <div id="admin-panel" class="card card-body mb-5 shadow-sm no-print">
-        <h4 class="text-danger mb-3">Panel de Gestión (Nube Activa ☁️)</h4>
+<header class="hero">
+    <div class="container">
+        <h1 class="display-6 fw-bold">Catálogo Maestro Integral</h1>
+        <p class="opacity-75">Andresito, Misiones | Precios en USD</p>
+    </div>
+</header>
+
+<div class="container my-5">
+    
+    <div class="row g-2 mb-5 text-center">
+        <div class="col-6 col-md-3"><button class="service-btn" onclick="filtrar('Cámaras')"><i class="bi bi-camera-video"></i><br>Cámaras</button></div>
+        <div class="col-6 col-md-3"><button class="service-btn" onclick="filtrar('Grabadores')"><i class="bi bi-device-hdd"></i><br>Grabadores</button></div>
+        <div class="col-6 col-md-3"><button class="service-btn" onclick="filtrar('Kits')"><i class="bi bi-box-seam"></i><br>Kits</button></div>
+        <div class="col-6 col-md-3"><button class="service-btn" onclick="filtrar('Accesorios')"><i class="bi bi-tools"></i><br>Insumos</button></div>
+    </div>
+
+    <div id="admin-panel">
+        <h5 class="fw-bold mb-3">Agregar Nuevo Producto</h5>
         <div class="row g-2">
-            <div class="col-md-3"><input type="text" id="add-nombre" class="form-control" placeholder="Equipo"></div>
-            <div class="col-md-2"><input type="number" id="add-precio" class="form-control" placeholder="Precio"></div>
-            <div class="col-md-4"><input type="text" id="add-img" class="form-control" placeholder="URL Imagen"></div>
-            <div class="col-md-3"><button id="btn-publicar" class="btn btn-danger w-100">Publicar en la Nube</button></div>
+            <div class="col-md-4"><input type="text" id="p-nombre" class="form-control" placeholder="Nombre"></div>
+            <div class="col-md-2"><input type="number" id="p-precio" class="form-control" placeholder="Precio USD"></div>
+            <div class="col-md-3">
+                <select id="p-cat" class="form-select">
+                    <option value="Cámaras">Cámaras</option>
+                    <option value="Grabadores">Grabadores</option>
+                    <option value="Kits">Kits</option>
+                    <option value="Accesorios">Accesorios</option>
+                    <option value="Almacenamiento">Almacenamiento</option>
+                </select>
+            </div>
+            <div class="col-md-3"><input type="text" id="p-foto" class="form-control" placeholder="URL Imagen"></div>
+            <div class="col-12 mt-2"><button onclick="subirProducto()" class="btn btn-success w-100 fw-bold">GUARDAR EN NUBE</button></div>
         </div>
-        <button onclick="cerrarAdmin()" class="btn btn-link btn-sm mt-2 text-secondary">Cerrar Sesión</button>
     </div>
 
-    <div class="row no-print" id="catalogo-tienda">
-        <div class="text-center p-5"><h5>Conectando con la base de datos de Andresito...</h5></div>
-    </div>
-
-    <div id="area-cotizacion" class="card shadow mt-5 p-4 bg-white border-0" style="border-radius: 15px;">
-        <div class="row mb-4 border-bottom pb-3">
-            <div class="col-6">
-                <img src="https://via.placeholder.com/150x80?text=CLICK+INFO" id="logo-img" style="max-width: 160px;">
-                <input type="text" id="url-logo" class="form-control form-control-sm no-print mt-2" placeholder="URL del Logo" onchange="actualizarLogo()">
-            </div>
-            <div class="col-6 text-end">
-                <h2 class="text-primary fw-bold">PRESUPUESTO</h2>
-                <p class="mb-0"><strong>Andresito, Misiones</strong></p>
-                <p class="mb-0">Cel: 3757601349</p>
-                <p class="small text-muted" id="fecha-actual"></p>
-            </div>
+    <div id="seccion-titulo"><h4 class="fw-bold mb-4">Todos los Productos</h4></div>
+    <div id="lista-productos" class="row g-3">
         </div>
-        <table class="table">
-            <thead class="table-dark">
-                <tr><th>Descripción</th><th class="text-center">Cant.</th><th class="text-end">Unit.</th><th class="text-end">Subtotal</th><th class="text-center no-print"></th></tr>
-            </thead>
-            <tbody id="tabla-cotizacion"></tbody>
-        </table>
-        <div class="text-end mt-3"><h3>Total: <span id="total-final" class="text-success">$0</span></h3></div>
-        <div class="mt-4 no-print row g-2">
-            <div class="col-md-6"><button onclick="exportarPDF()" class="btn btn-dark btn-lg w-100">📥 PDF</button></div>
-            <div class="col-md-6"><button onclick="enviarWhatsApp()" class="btn btn-success btn-lg w-100">💬 WhatsApp</button></div>
-        </div>
-    </div>
 </div>
+
+<a href="https://wa.me/5493757601349" class="whatsapp-btn shadow" target="_blank"><i class="bi bi-whatsapp"></i></a>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Datos extraídos de tu captura de pantalla
     const firebaseConfig = {
-        apiKey: "AIzaSyCWHZM6KXHbFNCPvOLYM-6C-kZ2BzK7GlM",
-        authDomain: "click-andresito.firebaseapp.com",
-        projectId: "click-andresito",
-        storageBucket: "click-andresito.firebasestorage.app",
-        messagingSenderId: "894542621880",
-        appId: "1:894542621880:web:e34cb0b70b8aaaec9b184d"
+        apiKey: "AIzaSyDqP1Q3cm1KxxGgqAHUfKJXFq9HWWS3Q5k",
+        authDomain: "click-ciss-web.firebaseapp.com",
+        projectId: "click-ciss-web",
+        storageBucket: "click-ciss-web.firebasestorage.app",
+        messagingSenderId: "503933085382",
+        appId: "1:503933085382:web:2c02acd276f7d7e96819c7"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const productosRef = collection(db, "productos");
+    const colRef = collection(db, "inventario");
 
-    onSnapshot(productosRef, (snapshot) => {
-        const productos = [];
-        snapshot.forEach((doc) => productos.push({ id: doc.id, ...doc.data() }));
-        window.productosGlobales = productos;
-        renderTienda(productos);
+    // DATA MAESTRA (Pre-cargada)
+    const catalogoMaestro = [
+        // CÁMARAS
+        { nombre: "Hilook Domo Turbo HD THC-T110-P", precio: 8.00, cat: "Cámaras", foto: "https://m.media-amazon.com/images/I/517B6A4W-aL._AC_SL1000_.jpg" },
+        { nombre: "Hikvision Domo DS-2CE56COT-IRP", precio: 9.90, cat: "Cámaras", foto: "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000002/S000000003/S000000004/O000001053/images/DS-2CE56C0T-IRP.png" },
+        { nombre: "Hilook Bullet Turbo HD THC-B110-P", precio: 10.00, cat: "Cámaras", foto: "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000002/S000000003/S000000004/O000001053/images/DS-2CE16C0T-IRP.png" },
+        { nombre: "Cámara Hikvision Bullet ColorVu DS-2CE10DFOT", precio: 22.50, cat: "Cámaras", foto: "https://m.media-amazon.com/images/I/51kIeTfS5xL.jpg" },
+        { nombre: "Cámara IP Ezviz H3C Color WiFi", precio: 39.00, cat: "Cámaras", foto: "https://m.media-amazon.com/images/I/51J9fG9Y1HL._AC_SL1500_.jpg" },
+        { nombre: "Cámara Hikvision Solar 4G LTE", precio: 240.00, cat: "Cámaras", foto: "https://www.hikvision.com/content/dam/hikvision/en/marketing/solar-powered-security-camera-setup/solar.png" },
+        
+        // GRABADORES
+        { nombre: "DVR Hilook 16 CH AcuSense", precio: 55.00, cat: "Grabadores", foto: "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000132/S000000133/S000000134/O000001386/images/DS-7216HGHI-M1.png" },
+        { nombre: "NVR Hikvision 16 CH 4K Ultra HD", precio: 91.00, cat: "Grabadores", foto: "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000002/S000000003/S000000004/O000001053/images/DS-7616NI-Q2.png" },
+        { nombre: "DVR Hikvision 32 Canales Negro", precio: 195.00, cat: "Grabadores", foto: "https://www.hikvision.com/content/dam/hikvision/products/S000000001/S000000132/S000000133/S000000134/O000001386/images/DS-7232HGHI-M2.png" },
+
+        // KITS
+        { nombre: "Kit Hikvision 4 Canales + 4 Cámaras", precio: 82.00, cat: "Kits", foto: "https://m.media-amazon.com/images/I/71Y87Y-t-xL._AC_SL1500_.jpg" },
+        { nombre: "Kit WiFi Ezviz con Base Station", precio: 189.00, cat: "Kits", foto: "https://m.media-amazon.com/images/I/6182D-7Xj2L._AC_SL1500_.jpg" },
+
+        // ALMACENAMIENTO Y ACCESORIOS
+        { nombre: "Disco Seagate 1TB Skyhawk Video", precio: 76.51, cat: "Almacenamiento", foto: "https://m.media-amazon.com/images/I/714pGid8t4L._AC_SL1500_.jpg" },
+        { nombre: "Fuente Switching 12V 5A", precio: 21.40, cat: "Accesorios", foto: "https://m.media-amazon.com/images/I/61-vK-N5vHL._AC_SL1000_.jpg" },
+        { nombre: "Cable UTP Cat5e Exterior (305m)", precio: 225.00, cat: "Accesorios", foto: "https://m.media-amazon.com/images/I/71X8Xm8P2DL._AC_SL1500_.jpg" }
+    ];
+
+    window.subirProducto = async () => {
+        const nombre = document.getElementById('p-nombre').value;
+        const precio = document.getElementById('p-precio').value;
+        const cat = document.getElementById('p-cat').value;
+        const foto = document.getElementById('p-foto').value || 'https://via.placeholder.com/400x300?text=CISS+CCTV';
+        if(nombre && precio) {
+            await addDoc(colRef, { nombre, precio: Number(precio), cat, foto, fecha: new Date() });
+            location.reload(); 
+        }
+    };
+
+    onSnapshot(query(colRef, orderBy("fecha", "desc")), (snapshot) => {
+        const contenedor = document.getElementById('lista-productos');
+        contenedor.innerHTML = '';
+        
+        // 1. Mostrar productos de Firebase (los que cargues tú)
+        snapshot.forEach((d) => {
+            const p = d.data();
+            renderCard(p, d.id, true);
+        });
+
+        // 2. Mostrar productos del Catálogo Maestro (los de Nissei)
+        catalogoMaestro.forEach((p) => {
+            renderCard(p, null, false);
+        });
     });
 
-    document.getElementById('btn-publicar').onclick = async () => {
-        const nombre = document.getElementById('add-nombre').value;
-        const precio = parseFloat(document.getElementById('add-precio').value);
-        const img = document.getElementById('add-img').value;
+    function renderCard(p, id, isNew) {
+        const contenedor = document.getElementById('lista-productos');
+        contenedor.innerHTML += `
+            <div class="col-6 col-md-3 item-producto" data-categoria="${p.cat}">
+                <div class="card product-card">
+                    <div class="img-container"><img src="${p.foto}"></div>
+                    <div class="card-body p-2 text-center">
+                        <span class="badge bg-light text-primary badge-cat mb-1">${p.cat}</span>
+                        <h6 class="fw-bold mb-1" style="font-size: 0.85rem; height: 35px; overflow: hidden;">${p.nombre}</h6>
+                        <p class="text-dark fw-bold mb-2">$${Number(p.precio).toLocaleString()}</p>
+                        <a href="https://wa.me/5493757601349?text=Consulta: ${p.nombre}" target="_blank" class="btn btn-success btn-sm w-100 rounded-pill"><i class="bi bi-whatsapp"></i> Pedir</a>
+                        ${id ? `<button onclick="eliminar('${id}')" class="btn btn-link text-danger btn-sm admin-only" style="display:none">Eliminar</button>` : ''}
+                    </div>
+                </div>
+            </div>`;
+    }
 
-        if (nombre && precio) {
-            await addDoc(productosRef, { nombre, precio, img: img || '' });
-            document.getElementById('add-nombre').value = '';
-            document.getElementById('add-precio').value = '';
-            document.getElementById('add-img').value = '';
-        }
+    window.filtrar = (cat) => {
+        document.querySelectorAll('.item-producto').forEach(el => {
+            el.style.display = el.getAttribute('data-categoria') === cat ? 'block' : 'none';
+        });
+        document.getElementById('seccion-titulo').innerHTML = `<h4 class="fw-bold mb-4">Filtrando: ${cat}</h4>`;
     };
 
-    window.borrarProductoNube = async (id) => {
-        if(confirm("¿Eliminar producto de la nube?")) {
-            await deleteDoc(doc(db, "productos", id));
-        }
-    };
+    window.eliminar = async (id) => { if(confirm("¿Eliminar?")) await deleteDoc(doc(db, "inventario", id)); };
 </script>
 
 <script>
-    let carrito = [];
-    const CLAVE_ADMIN = "1234";
-
-    function renderTienda(productos) {
-        const contenedor = document.getElementById('catalogo-tienda');
-        const isAdmin = document.getElementById('admin-panel').style.display === 'block';
-        
-        if (productos.length === 0) {
-            contenedor.innerHTML = '<div class="text-center p-5 w-100"><h5>No hay productos. Entra como Admin para cargar el primero.</h5></div>';
-            return;
+    function toggleAdmin() {
+        if(prompt("Clave:") === "1234") {
+            document.getElementById('admin-panel').style.display = 'block';
+            document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
         }
-
-        contenedor.innerHTML = productos.map((p, i) => `
-            <div class="col-6 col-md-4 col-lg-3 mb-4">
-                <div class="card product-card">
-                    <div class="img-container"><img src="${p.img}" class="product-img" onerror="this.src='https://via.placeholder.com/200?text=CCTV'"></div>
-                    <div class="card-body p-2 text-center">
-                        <h6 class="mb-1">${p.nombre}</h6>
-                        <p class="fw-bold text-primary mb-2">$${p.precio.toLocaleString()}</p>
-                        <button onclick="alCarrito(${i})" class="btn btn-primary btn-sm w-100">Añadir</button>
-                        ${isAdmin ? `<button onclick="borrarProductoNube('${p.id}')" class="btn btn-link btn-sm text-danger p-0 mt-1">Eliminar</button>` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
     }
-
-    function alCarrito(index) {
-        const p = window.productosGlobales[index];
-        const exist = carrito.find(item => item.nombre === p.nombre);
-        if(exist) exist.cant++; else carrito.push({...p, cant: 1});
-        actualizarCotizacion();
-    }
-
-    function actualizarCotizacion() {
-        const tabla = document.getElementById('tabla-cotizacion');
-        let total = 0;
-        tabla.innerHTML = carrito.map((item, i) => {
-            const sub = item.precio * item.cant;
-            total += sub;
-            return `<tr><td>${item.nombre}</td><td class="text-center">${item.cant}</td><td class="text-end">$${item.precio.toLocaleString()}</td><td class="text-end">$${sub.toLocaleString()}</td><td class="text-center no-print"><button class="btn btn-sm text-danger" onclick="quitarUno(${i})">x</button></td></tr>`;
-        }).join('');
-        document.getElementById('total-final').innerText = `$${total.toLocaleString()}`;
-    }
-
-    function enviarWhatsApp() {
-        let mensaje = `*CLICK INFORMÁTICA - PRESUPUESTO*%0A------------------------------%0A`;
-        carrito.forEach(item => mensaje += `• ${item.nombre} (x${item.cant}): $${(item.precio * item.cant).toLocaleString()}%0A`);
-        mensaje += `------------------------------%0A*TOTAL: ${document.getElementById('total-final').innerText}*`;
-        window.open(`https://wa.me/5493757601349?text=${mensaje}`, '_blank');
-    }
-
-    function exportarPDF() {
-        const element = document.getElementById('area-cotizacion');
-        html2pdf().from(element).set({ margin: 0.5, filename: 'Presupuesto_Click.pdf', html2canvas: { scale: 3 } }).save();
-    }
-
-    function loginAdmin() { if(prompt("Clave:") === CLAVE_ADMIN) { document.getElementById('admin-panel').style.display = 'block'; renderTienda(window.productosGlobales); } }
-    function cerrarAdmin() { document.getElementById('admin-panel').style.display = 'none'; renderTienda(window.productosGlobales); }
-    function quitarUno(i) { carrito.splice(i, 1); actualizarCotizacion(); }
-    function actualizarLogo() { const url = document.getElementById('url-logo').value; document.getElementById('logo-img').src = url; localStorage.setItem('logo_click', url); }
-
-    document.getElementById('fecha-actual').innerText = "Fecha: " + new Date().toLocaleDateString();
-    const l = localStorage.getItem('logo_click'); if(l){ document.getElementById('logo-img').src = l; document.getElementById('url-logo').value = l; }
 </script>
 </body>
 </html>
